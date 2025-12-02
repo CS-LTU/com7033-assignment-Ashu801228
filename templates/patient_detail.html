@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Patient Detail{% endblock %}
+
+{% block content %}
+<h1>Patient Detail</h1>
+
+<h2>Patient Information</h2>
+<ul>
+  <li><strong>ID:</strong> {{ patient.id }}</li>
+  <li><strong>Gender:</strong> {{ patient.gender }}</li>
+  <li><strong>Age:</strong> {{ patient.age }}</li>
+  <li><strong>Hypertension:</strong> {{ 'Yes' if patient.hypertension else 'No' }}</li>
+  <li><strong>Heart Disease:</strong> {{ 'Yes' if patient.heart_disease else 'No' }}</li>
+  <li><strong>Ever Married:</strong> {{ patient.ever_married }}</li>
+  <li><strong>Work Type:</strong> {{ patient.work_type }}</li>
+  <li><strong>Residence Type:</strong> {{ patient.residence_type }}</li>
+  <li><strong>Avg Glucose Level:</strong> {{ patient.avg_glucose_level }}</li>
+  <li><strong>BMI:</strong> {{ patient.bmi }}</li>
+  <li><strong>Smoking Status:</strong> {{ patient.smoking_status }}</li>
+  <li><strong>Dataset Stroke Label:</strong> {{ patient.stroke }}</li>
+</ul>
+
+<hr>
+
+<h2>Stroke Risk Prediction</h2>
+{% if prediction %}
+  <p><strong>Predicted stroke label:</strong> {{ prediction[1] }} (0 = no stroke, 1 = stroke)</p>
+  <p><strong>Predicted probability of stroke:</strong> {{ (prediction[0] * 100) | round(2) }}%</p>
+{% else %}
+  <p>No prediction available.</p>
+{% endif %}
+
+<hr>
+
+<p>
+  <a href="{{ url_for('main.edit_patient', patient_id=patient.id) }}">Edit patient</a> |
+  <a href="{{ url_for('main.patients_list') }}">Back to all patients</a>
+</p>
+{% endblock %}
