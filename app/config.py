@@ -12,6 +12,8 @@ class Config:
     # Default database (used for authentication / users)
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + str(BASE_DIR / "instance" / "auth.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # MongoDB connection URI for secondary patient document storage
+    MONGO_URI = os.environ.get("MONGO_URI") or "mongodb://localhost:27017/stroke_app"
 
     # Second database (used for patient records)
     SQLALCHEMY_BINDS = {
