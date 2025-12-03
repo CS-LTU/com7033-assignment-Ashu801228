@@ -1,13 +1,18 @@
-import pytest
-from app import create_app
+import os
+import sys
 
+# Make sure the project root (where 'app' lives) is on the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from app import create_app, db
+import pytest
 
 @pytest.fixture
 def app():
-    """
-    Create a new app instance for each test.
-    Uses the normal application factory.
-    """
+#===========================================
+    #Create a new app instance for each test.
+    #Uses the normal application factory.
+#=============================================
     app = create_app()
     app.config.update(
         TESTING=True,
