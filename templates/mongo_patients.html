@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Mongo Patients{% endblock %}
+
+{% block content %}
+<h1>Patients (from MongoDB)</h1>
+
+<p>This page shows patient documents stored in MongoDB.</p>
+
+<table border="1" cellpadding="5">
+  <tr>
+    <th>SQL ID</th>
+    <th>Gender</th>
+    <th>Age</th>
+    <th>Stroke Label</th>
+  </tr>
+  {% for p in patients %}
+  <tr>
+    <td>{{ p.sql_id }}</td>
+    <td>{{ p.gender }}</td>
+    <td>{{ p.age }}</td>
+    <td>
+      {% if p.stroke is not none %}
+        {{ p.stroke }}
+      {% else %}
+        Unknown
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

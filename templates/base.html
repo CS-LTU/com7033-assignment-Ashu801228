@@ -12,6 +12,7 @@
       <a href="{{ url_for('main.patients_list') }}">Patients</a>
       <span>Logged in as {{ current_user.username }}</span>
       <a href="{{ url_for('main.logout') }}">Logout</a>
+	  <li><a href="{{ url_for('main.mongo_patients') }}">Mongo Patients</a></li>
     {% else %}
       <a href="{{ url_for('main.login') }}">Login</a>
     {% endif %}
