@@ -7,7 +7,7 @@
 # CRUD operations for Patient records
 # Views that use the trained ML model to display stroke-risk predictions
 #=========================================================================
-
+from .mongo_db import get_patients_collection
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, login_required, logout_user, current_user
 
@@ -126,6 +126,22 @@ def create_patient():
         )
         db.session.add(patient)
         db.session.commit()
+         # Also insert into MongoDB as a document
+        coll = get_patients_collection()
+        coll.insert_one({
+            "sql_id": patient.id,
+            "gender": patient.gender,
+            "age": patient.age,
+            "hypertension": patient.hypertension,
+            "heart_disease": patient.heart_disease,
+            "ever_married": patient.ever_married,
+            "work_type": patient.work_type,
+            "residence_type": patient.residence_type,
+            "avg_glucose_level": patient.avg_glucose_level,
+            "bmi": patient.bmi,
+            "smoking_status": patient.smoking_status,
+            "stroke": patient.stroke,
+        })
         flash("Patient created successfully.", "success")
         return redirect(url_for("main.patients_list"))
 
@@ -145,6 +161,25 @@ def edit_patient(patient_id):
     if form.validate_on_submit():
         form.populate_obj(patient)
         db.session.commit()
+        # Sync changes to MongoDB
+        coll = get_patients_collection()
+        coll.update_one(
+            {"sql_id": patient.id},
+            {"$set": {
+                "gender": patient.gender,
+                "age": patient.age,
+                "hypertension": patient.hypertension,
+                "heart_disease": patient.heart_disease,
+                "ever_married": patient.ever_married,
+                "work_type": patient.work_type,
+                "residence_type": patient.residence_type,
+                "avg_glucose_level": patient.avg_glucose_level,
+                "bmi": patient.bmi,
+                "smoking_status": patient.smoking_status,
+                "stroke": patient.stroke,
+            }},
+            upsert=True,
+        )
         flash("Patient updated successfully.", "success")
         return redirect(url_for("main.patient_detail", patient_id=patient.id))
 
@@ -159,7 +194,14 @@ def edit_patient(patient_id):
 @login_required
 def delete_patient(patient_id):
     patient = Patient.query.get_or_404(patient_id)
+
+    # Delete from SQLite
     db.session.delete(patient)
     db.session.commit()
-    flash("Patient deleted successfully.", "info")
+
+    # Delete from MongoDB
+    coll = get_patients_collection()
+    coll.delete_one({"sql_id": patient_id})
+
+    flash("Patient deleted successfully from SQL and MongoDB.", "info")
     return redirect(url_for("main.patients_list"))
