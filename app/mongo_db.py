@@ -1,31 +1,29 @@
 from flask import current_app
-from pymongo import MongoClient
-
-_client = None
-_patients_collection = None
+from pymongo import MongoClient, errors
 
 
 def get_mongo_client():
-    
-    #create and cache a MongoClient using the Flask app config.
+    """
+    Create and return a MongoClient.
+    MongoDB must be available. If not, the app raises an error immediately.
+    """
+    uri = current_app.config["MONGO_URI"]
 
-    global _client
-    if _client is None:
-        uri = current_app.config["MONGO_URI"]
-        _client = MongoClient(uri)
-    return _client
+    try:
+        client = MongoClient(uri, serverSelectionTimeoutMS=2000)
+        # Test connection
+        client.admin.command("ping")
+        return client
+    except errors.PyMongoError as e:
+        # Hard fail: MongoDB MUST be running
+        current_app.logger.error(f"Cannot connect to MongoDB at {uri}: {e}")
+        raise RuntimeError("MongoDB is required but not available.") from e
 
 
 def get_patients_collection():
-
-    #Return the MongoDB 'patients' collection.
-
-    #Database name is taken from the URI (e.g. stroke_app),
-    #collection name is fixed as 'patients'.
-    
-    global _patients_collection
-    if _patients_collection is None:
-        client = get_mongo_client()
-        db = client.get_default_database()
-        _patients_collection = db["patients"]
-    return _patients_collection
+    """
+    Return the MongoDB 'patients' collection.
+    """
+    client = get_mongo_client()
+    db = client.get_default_database()
+    return db["patients"]
