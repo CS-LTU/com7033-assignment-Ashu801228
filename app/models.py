@@ -31,7 +31,6 @@ class Patient(db.Model):
     __tablename__ = "patients"
 
     id = db.Column(db.Integer, primary_key=True)
-    full_name = db.Column(db.String(120), nullable=False)  # can be synthetic like "Patient 123"
     gender = db.Column(db.String(20))
     age = db.Column(db.Float)
     hypertension = db.Column(db.Boolean, default=False)

@@ -131,12 +131,11 @@ def create_patient():
     form = PatientForm()
 
     if form.validate_on_submit():
-        # Create SQL record
         patient = Patient(
             gender=form.gender.data,
             age=form.age.data,
-            hypertension=form.hypertension.data,
-            heart_disease=form.heart_disease.data,
+            hypertension=int(form.hypertension.data),
+            heart_disease=int(form.heart_disease.data),
             ever_married=form.ever_married.data,
             work_type=form.work_type.data,
             residence_type=form.residence_type.data,
@@ -145,7 +144,7 @@ def create_patient():
             smoking_status=form.smoking_status.data,
         )
 
-        # Handle stroke label from form (may be "", "0" or "1")
+        # Stroke: string -> int or None
         if form.stroke.data in (None, "", "None"):
             patient.stroke = None
         else:
@@ -154,6 +153,7 @@ def create_patient():
         db.session.add(patient)
         db.session.commit()
 
+        # Mirror to MongoDB
         coll = get_patients_collection()
         if coll is not None:
             coll.insert_one({
@@ -171,8 +171,10 @@ def create_patient():
                 "stroke": patient.stroke,
             })
 
+        flash("Patient created successfully.", "success")
+        return redirect(url_for("main.patients_list"))
 
-
+    return render_template("patient_form.html", form=form, title="Create Patient")
 # ---------------------------
 # Patient Detail + Prediction
 # ---------------------------
@@ -213,9 +215,27 @@ def edit_patient(patient_id):
     patient = Patient.query.get_or_404(patient_id)
     form = PatientForm(obj=patient)
 
-    if form.validate_on_submit():
-        form.populate_obj(patient)
+    # On GET, make sure the stroke field shows correct string value
+    if request.method == "GET":
+        if patient.stroke is None:
+            form.stroke.data = ""
+        else:
+            form.stroke.data = str(patient.stroke)
 
+    if form.validate_on_submit():
+        # Copy simple fields over
+        patient.gender = form.gender.data
+        patient.age = form.age.data
+        patient.hypertension = int(form.hypertension.data)
+        patient.heart_disease = int(form.heart_disease.data)
+        patient.ever_married = form.ever_married.data
+        patient.work_type = form.work_type.data
+        patient.residence_type = form.residence_type.data
+        patient.avg_glucose_level = form.avg_glucose_level.data
+        patient.bmi = form.bmi.data
+        patient.smoking_status = form.smoking_status.data
+
+        # Stroke: string -> int or None
         if form.stroke.data in (None, "", "None"):
             patient.stroke = None
         else:
@@ -223,7 +243,7 @@ def edit_patient(patient_id):
 
         db.session.commit()
 
-        
+        # Sync changes to MongoDB
         coll = get_patients_collection()
         if coll is not None:
             coll.update_one(
@@ -244,8 +264,10 @@ def edit_patient(patient_id):
                 upsert=True,
             )
 
+        flash("Patient updated successfully.", "success")
+        return redirect(url_for("main.patient_detail", patient_id=patient.id))
 
-
+    return render_template("patient_form.html", form=form, title="Edit Patient")
 # ---------------------------
 # Delete Patient (SQL + Mongo)
 # ---------------------------

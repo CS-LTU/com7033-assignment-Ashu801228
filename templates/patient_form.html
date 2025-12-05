@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+% extends "base.html" %}
 {% block title %}{{ title or "Patient Form" }}{% endblock %}
 
 {% block content %}
@@ -9,15 +9,15 @@
 
   <p>{{ form.gender.label }}<br>{{ form.gender() }}</p>
   <p>{{ form.age.label }}<br>{{ form.age() }}</p>
-  <p>{{ form.hypertension.label }} {{ form.hypertension() }}</p>
-  <p>{{ form.heart_disease.label }} {{ form.heart_disease() }}</p>
+  <p>{{ form.hypertension.label }}<br>{{ form.hypertension() }}</p>
+  <p>{{ form.heart_disease.label }}<br>{{ form.heart_disease() }}</p>
   <p>{{ form.ever_married.label }}<br>{{ form.ever_married() }}</p>
-  <p>{{ form.work_type.label }}<br>{{ form.work_type(size=32) }}</p>
+  <p>{{ form.work_type.label }}<br>{{ form.work_type() }}</p>
   <p>{{ form.residence_type.label }}<br>{{ form.residence_type() }}</p>
   <p>{{ form.avg_glucose_level.label }}<br>{{ form.avg_glucose_level() }}</p>
   <p>{{ form.bmi.label }}<br>{{ form.bmi() }}</p>
-  <p>{{ form.smoking_status.label }}<br>{{ form.smoking_status(size=32) }}</p>
-  <p>{{ form.stroke.label }} {{ form.stroke() }}</p>
+  <p>{{ form.smoking_status.label }}<br>{{ form.smoking_status() }}</p>
+  <p>{{ form.stroke.label }}<br>{{ form.stroke() }}</p>
 
   <p>{{ form.submit() }}</p>
 </form>

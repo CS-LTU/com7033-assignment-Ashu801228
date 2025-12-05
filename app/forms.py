@@ -41,92 +41,79 @@ class LoginForm(FlaskForm):
         validators=[DataRequired()],
     )
     submit = SubmitField("Login")
-# -------------------------
+# ------------------------------------------
 # Patient Data Entry Form
 # Used for adding and editing patient records
-# -------------------------
-
+# -------------------------------------------
 class PatientForm(FlaskForm):
+
     gender = SelectField(
         "Gender",
-        choices=[
-            ("Male", "Male"),
-            ("Female", "Female"),
-            ("Other", "Other"),
-        ],
+        choices=[("Male", "Male"), ("Female", "Female"), ("Other", "Other")],
         validators=[DataRequired()],
     )
-
     age = IntegerField(
         "Age",
-        validators=[
-            DataRequired(),
-            NumberRange(min=0, max=120),
-        ],
+        validators=[DataRequired(), NumberRange(min=0, max=120)],
     )
-
-    hypertension = BooleanField("Hypertension")
-    heart_disease = BooleanField("Heart Disease")
-
+    hypertension = SelectField(
+        "Hypertension",
+        choices=[("0", "No"), ("1", "Yes")],
+        validators=[DataRequired()],
+    )
+    heart_disease = SelectField(
+        "Heart Disease",
+        choices=[("0", "No"), ("1", "Yes")],
+        validators=[DataRequired()],
+    )
     ever_married = SelectField(
-        "Ever married",
+        "Ever Married",
+        choices=[("No", "No"), ("Yes", "Yes")],
+        validators=[DataRequired()],
+    )
+    work_type = SelectField(
+        "Work Type",
         choices=[
-            ("Yes", "Yes"),
-            ("No", "No"),
+            ("Private", "Private"),
+            ("Self-employed", "Self-employed"),
+            ("Govt_job", "Government job"),
+            ("children", "Children"),
+            ("Never_worked", "Never worked"),
         ],
         validators=[DataRequired()],
     )
-
-    work_type = StringField(
-        "Work type",
-        validators=[
-            DataRequired(),
-            Length(max=120),
-        ],
-    )
-
     residence_type = SelectField(
-        "Residence type",
-        choices=[
-            ("Urban", "Urban"),
-            ("Rural", "Rural"),
-        ],
+        "Residence Type",
+        choices=[("Urban", "Urban"), ("Rural", "Rural")],
         validators=[DataRequired()],
     )
-
     avg_glucose_level = FloatField(
-        "Average glucose level",
-        validators=[
-            DataRequired(),
-            NumberRange(min=0),
-        ],
+        "Average Glucose Level",
+        validators=[DataRequired(), NumberRange(min=0)],
     )
-
     bmi = FloatField(
         "BMI",
-        validators=[
-            Optional(),
-            NumberRange(min=0),
-        ],
+        validators=[Optional(), NumberRange(min=0)],
     )
-
-    smoking_status = StringField(
-        "Smoking status",
-        validators=[
-            Optional(),
-            Length(max=120),
-        ],
-    )
-
-    # Stroke label as in dataset: 0 = no stroke, 1 = stroke
-    stroke = SelectField(
-        "Stroke (dataset label)",
+    smoking_status = SelectField(
+        "Smoking Status",
         choices=[
-            ("0", "0 - No stroke"),
-            ("1", "1 - Stroke"),
+            ("formerly smoked", "Formerly smoked"),
+            ("never smoked", "Never smoked"),
+            ("smokes", "Smokes"),
+            ("Unknown", "Unknown"),
         ],
-        default="0",
         validators=[DataRequired()],
+    )
+    stroke = SelectField(
+        "Stroke Label",
+        choices=[
+            ("", "Unknown / Not labelled"),
+            ("0", "No stroke (0)"),
+            ("1", "Has stroke (1)"),
+        ],
+        validators=[Optional()],
     )
 
     submit = SubmitField("Save")
+
